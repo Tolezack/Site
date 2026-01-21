@@ -1,1 +1,1839 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JordanWearStore</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+body{background:#f4f4f4}
 
+/* HEADER */
+header{
+    background:#000;
+    color:#fff;
+    padding:15px 20px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    position:sticky;
+    top:0;
+    z-index:100;
+}
+.cart-icon{
+    position:relative;
+    cursor:pointer;
+    font-size:22px;
+}
+.cart-count{
+    position:absolute;
+    top:-8px;
+    right:-8px;
+    background:red;
+    color:white;
+    border-radius:50%;
+    width:18px;
+    height:18px;
+    font-size:11px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+/* BANNER */
+.banner{
+    width:100%;
+    height:300px;
+    overflow:hidden;
+    position:relative;
+}
+.banner img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    position:absolute;
+    opacity:0;
+    transition:opacity .6s ease;
+}
+.banner img.active{
+    opacity:1;
+}
+
+/* TABS */
+.tabs{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    margin:20px 0;
+    padding:0 10px;
+    flex-wrap:wrap;
+}
+.tab{
+    padding:10px 20px;
+    background:#ddd;
+    border-radius:20px;
+    cursor:pointer;
+    font-weight:bold;
+    font-size:14px;
+}
+.tab.active{
+    background:#000;
+    color:#fff;
+}
+
+/* SECTION */
+.section{
+    padding:20px;
+    display:block;
+}
+.section.hidden{
+    display:none;
+}
+.products{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(200px, 1fr));
+    gap:15px;
+}
+
+/* PRODUCT */
+.product{
+    background:#fff;
+    border-radius:8px;
+    overflow:hidden;
+    position:relative;
+    cursor:pointer;
+    transition:transform 0.2s ease;
+    height:340px;
+}
+.product:hover{
+    transform:translateY(-3px);
+    box-shadow:0 5px 15px rgba(0,0,0,0.1);
+}
+.product img{
+    width:100%;
+    height:180px;
+    object-fit:cover;
+    display:block;
+}
+.product h4{
+    text-align:center;
+    padding:8px;
+    font-size:13px;
+    height:35px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+}
+.product-price{
+    text-align:center;
+    color:#000;
+    font-weight:bold;
+    padding:3px 10px 8px;
+    font-size:15px;
+}
+
+/* STOCK INFO */
+.stock-info {
+    text-align:center;
+    padding:3px 8px;
+    font-size:11px;
+    font-weight:bold;
+}
+.stock-high { color:#2ecc71; }
+.stock-medium { color:#f39c12; }
+.stock-low { color:#e74c3c; }
+.stock-out { color:#95a5a6; }
+
+/* BOTÕES NO PRODUCT */
+.product-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 8px;
+    margin-top: 3px;
+}
+
+.product-btn {
+    padding: 8px;
+    border: none;
+    border-radius: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background 0.2s;
+    width: 100%;
+}
+
+.buy-btn {
+    background: #000;
+    color: white;
+}
+
+.buy-btn:hover {
+    background: #333;
+}
+
+.details-btn {
+    background: #f0f0f0;
+    color: black;
+}
+
+.details-btn:hover {
+    background: #e0e0e0;
+}
+
+.disabled-btn {
+    background: #95a5a6;
+    color: white;
+    cursor: not-allowed;
+}
+
+/* MODAL DE DETALHES */
+.details-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: rgba(0,0,0,0.9);
+    z-index: 2000;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+}
+
+.details-modal.active {
+    display: flex;
+}
+
+.details-content {
+    background: white;
+    border-radius: 10px;
+    max-width: 400px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: modalFade 0.3s ease;
+}
+
+@keyframes modalFade {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* CARROSSEL DE IMAGENS */
+.image-carousel {
+    position: relative;
+    width: 100%;
+    height: 250px;
+    overflow: hidden;
+    border-radius: 8px 8px 0 0;
+}
+
+.carousel-images {
+    display: flex;
+    transition: transform 0.5s ease;
+    height: 100%;
+}
+
+.carousel-image {
+    min-width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.carousel-controls {
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    transform: translateY(-50%);
+    padding: 0 10px;
+}
+
+.carousel-btn {
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s;
+}
+
+.carousel-btn:hover {
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.carousel-indicators {
+    position: absolute;
+    bottom: 15px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+}
+
+.carousel-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    transition: background 0.3s;
+}
+
+.carousel-indicator.active {
+    background: white;
+    transform: scale(1.2);
+}
+
+/* MINIATURAS */
+.image-thumbnails {
+    display: flex;
+    gap: 8px;
+    margin: 10px 0;
+    padding: 10px;
+    overflow-x: auto;
+    background: #f8f8f8;
+    border-radius: 0 0 8px 8px;
+}
+
+.thumbnail {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.3s;
+}
+
+.thumbnail.active {
+    border-color: #000;
+    transform: scale(1.05);
+}
+
+.thumbnail:hover {
+    opacity: 0.8;
+}
+
+/* CART MODAL */
+.cart-modal{
+    position:fixed;
+    top:0;
+    right:-100%;
+    width:100%;
+    max-width:400px;
+    height:100vh;
+    background:#fff;
+    transition:right 0.3s;
+    z-index:1000;
+    display:flex;
+    flex-direction:column;
+}
+.cart-modal.active{
+    right:0;
+}
+.cart-header{
+    padding:15px;
+    background:#000;
+    color:#fff;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+.cart-close{
+    background:none;
+    border:none;
+    color:#fff;
+    font-size:24px;
+    cursor:pointer;
+}
+.cart-items{
+    flex:1;
+    overflow-y:auto;
+    padding:15px;
+}
+.cart-item{
+    display:flex;
+    gap:10px;
+    padding:10px 0;
+    border-bottom:1px solid #eee;
+}
+.cart-item img{
+    width:50px;
+    height:50px;
+    object-fit:cover;
+    border-radius:5px;
+}
+.cart-item-info{
+    flex:1;
+}
+.cart-item-price{
+    font-weight:bold;
+    margin:3px 0;
+    font-size:13px;
+}
+.cart-item-actions{
+    display:flex;
+    gap:6px;
+    align-items:center;
+    margin-top:3px;
+}
+.cart-item-quantity{
+    display:flex;
+    align-items:center;
+    gap:5px;
+}
+.quantity-btn-small{
+    width:20px;
+    height:20px;
+    border:none;
+    background:#f0f0f0;
+    border-radius:50%;
+    cursor:pointer;
+    font-size:11px;
+}
+.cart-item-remove{
+    background:none;
+    border:none;
+    color:#ff4444;
+    cursor:pointer;
+    font-size:11px;
+}
+.cart-footer{
+    padding:15px;
+    border-top:1px solid #eee;
+}
+.cart-total{
+    display:flex;
+    justify-content:space-between;
+    font-weight:bold;
+    font-size:16px;
+    margin-bottom:15px;
+}
+.checkout-button{
+    width:100%;
+    padding:12px;
+    background:#25D366;
+    color:#fff;
+    border:none;
+    border-radius:5px;
+    font-weight:bold;
+    cursor:pointer;
+    font-size:14px;
+}
+
+/* CHECKOUT MODAL */
+.checkout-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: rgba(0,0,0,0.8);
+    z-index: 2000;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+}
+
+.checkout-modal.active {
+    display: flex;
+}
+
+.checkout-container {
+    background: white;
+    border-radius: 10px;
+    max-width: 400px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.checkout-header {
+    padding: 15px;
+    background: #000;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 10px 10px 0 0;
+}
+
+.checkout-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.checkout-form {
+    padding: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #333;
+    font-size: 14px;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 70px;
+}
+
+.payment-methods {
+    margin-top: 10px;
+}
+
+.payment-option {
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    text-align: center;
+    cursor: pointer;
+    background: #f8f9fa;
+    font-size: 14px;
+}
+
+.payment-option.active {
+    border-color: #25D366;
+    background: rgba(37, 211, 102, 0.1);
+}
+
+.delivery-options {
+    margin-top: 10px;
+}
+
+.delivery-option {
+    padding: 10px;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.delivery-option.active {
+    border-color: #25D366;
+    background: rgba(37, 211, 102, 0.1);
+}
+
+.delivery-price {
+    float: right;
+    font-weight: bold;
+    color: #25D366;
+    font-size: 14px;
+}
+
+.order-summary {
+    background: #f9f9f9;
+    padding: 12px;
+    border-radius: 5px;
+    margin: 15px 0;
+    font-size: 14px;
+}
+
+.order-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+}
+
+.order-total {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    font-size: 16px;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid #ddd;
+}
+
+.submit-order-btn {
+    width: 100%;
+    padding: 12px;
+    background: #25D366;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: 15px;
+}
+
+/* NOTIFICAÇÃO */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #2c3e50;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    z-index: 9999;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    animation: slideIn 0.3s ease;
+    font-size: 14px;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideOut {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100%); opacity: 0; }
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px){
+    .products{
+        grid-template-columns:repeat(auto-fill, minmax(150px, 1fr));
+        gap:10px;
+    }
+    .product {
+        height: 310px;
+    }
+    .product img {
+        height: 140px;
+    }
+    .product h4 {
+        font-size: 12px;
+        padding: 6px;
+    }
+    .product-price {
+        font-size: 13px;
+    }
+    .product-btn {
+        padding: 6px;
+        font-size: 11px;
+    }
+    .banner {
+        height: 200px;
+    }
+    .image-carousel {
+        height: 200px;
+    }
+}
+
+@media (max-width: 480px){
+    .products{
+        grid-template-columns:1fr 1fr;
+    }
+    .product {
+        height: 280px;
+    }
+    .product img {
+        height: 120px;
+    }
+    header {
+        padding: 10px 15px;
+    }
+    .tabs {
+        gap: 5px;
+    }
+    .tab {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+    .image-carousel {
+        height: 180px;
+    }
+    .thumbnail {
+        width: 50px;
+        height: 50px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h2 style="font-size: 18px;">JordanWearStore</h2>
+    <div class="cart-icon" onclick="toggleCart()">
+        🛒
+        <span class="cart-count">0</span>
+    </div>
+</header>
+
+<!-- BANNER COMPLETO COM IMAGENS DO PINTEREST -->
+<div class="banner">
+    <img src="https://i.pinimg.com/736x/82/21/f4/8221f40a9e4e84aec32443e0130f5cc6.jpg" class="active">
+    <img src="https://i.pinimg.com/736x/e2/4f/e5/e24fe59b5b8692ae562807680b04527e.jpg" alt="PPD OK THE BALL">
+    <img src="https://i.pinimg.com/736x/55/e8/60/55e8602476052c3b9e3383840c3b3741.jpg">
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+    <div class="tab active" onclick="showTab('camisas')">Camisas</div>
+    <div class="tab" onclick="showTab('calcas')">Calças</div>
+</div>
+
+<!-- CAMISAS - 18 PRODUTOS -->
+<section class="section" id="camisas">
+    <div class="products" id="camisasProducts">
+        <!-- 18 produtos de camisas serão inseridos pelo JavaScript -->
+    </div>
+</section>
+
+<!-- CALÇAS - 18 PRODUTOS -->
+<section class="section hidden" id="calcas">
+    <div class="products" id="calcasProducts">
+        <!-- 18 produtos de calças serão inseridos pelo JavaScript -->
+    </div>
+</section>
+
+<!-- MODAL DE DETALHES -->
+<div class="details-modal" id="detailsModal">
+    <!-- Conteúdo será preenchido pelo JavaScript -->
+</div>
+
+<!-- CARRINHO -->
+<div class="cart-modal" id="cartModal">
+    <div class="cart-header">
+        <h3 style="font-size: 16px;">Meu Carrinho</h3>
+        <button class="cart-close" onclick="toggleCart()">×</button>
+    </div>
+    <div class="cart-items" id="cartItems">
+        <!-- Itens do carrinho -->
+    </div>
+    <div class="cart-footer">
+        <div class="cart-total">
+            <span>Total:</span>
+            <span id="cartTotal">R$ 0,00</span>
+        </div>
+        <button class="checkout-button" onclick="openCheckout()">Finalizar Pedido</button>
+        <!-- BOTÃO PARA LIMPAR CARRINHO (OPCIONAL) -->
+        <button onclick="clearSavedCart()" style="width:100%; padding:8px; margin-top:10px; background:#95a5a6; color:white; border:none; border-radius:5px; cursor:pointer; font-size:12px;">
+            🗑️ Limpar Carrinho
+        </button>
+    </div>
+</div>
+
+<!-- MODAL DE CHECKOUT -->
+<div class="checkout-modal" id="checkoutModal">
+    <div class="checkout-container">
+        <div class="checkout-header">
+            <h3 style="font-size: 16px;">Finalizar Pedido</h3>
+            <button class="checkout-close" onclick="closeCheckout()">×</button>
+        </div>
+        <div class="checkout-form" id="checkoutForm"></div>
+    </div>
+</div>
+
+<script>
+// ============================================
+// SISTEMA DE PRODUTOS - 36 PRODUTOS (18+18)
+// ============================================
+
+const produtos = [
+    // ======================================
+    // CAMISAS - 19 PRODUTOS
+    // ======================================
+    {
+        id: 'camisa1',
+        nome: 'Camisa Jordan Air Classic',
+        categoria: 'camisas',
+        preco: 299.9,
+        estoque: 26,
+        imagem: 'https://images.unsplash.com/photo-1520975922284-8b456906c813?w=300&h=300&fit=crop',
+        imagens: ["https://images.unsplash.com/photo-1520975922284-8b456906c813?w=300&h=300&fit=crop","https://i.pinimg.com/736x/c1/5c/4a/c15c4a7d8cb147ceca2302e75678d94f.jpg"],
+        descricao: 'Clássica camisa Jordan com tecnologia Dry-Fit premium'
+    },
+    {
+        id: 'camisa2',
+        nome: 'Camisa Jordan Retro 23',
+        categoria: 'camisas',
+        preco: 289.9,
+        estoque: 18,
+        imagem: 'https://images.unsplash.com/photo-1516826957135-700dedea698c?w=300&h=300&fit=crop',
+        imagens: ["https://images.unsplash.com/photo-1516826957135-700dedea698c?w=300&h=300&fit=crop"],
+        descricao: 'Design retrô inspirado nos anos 90 com logo bordado'
+    },
+    {
+        id: 'camisa3',
+        nome: 'Camisa Jordan Performance',
+        categoria: 'camisas',
+        preco: 329.9,
+        estoque: 12,
+        imagem: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=300&h=300&fit=crop',
+        imagens: ["https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=300&h=300&fit=crop"],
+        descricao: 'Tecnologia de alta performance para atividades esportivas'
+    },
+    {
+        id: 'camisa4',
+        nome: 'Camisa Jordan Signature',
+        categoria: 'camisas',
+        preco: 349.9,
+        estoque: 8,
+        imagem: 'https://images.unsplash.com/photo-1529374255404-311a2a4f1fd9?w=300&h=300&fit=crop',
+        imagens: ["https://images.unsplash.com/photo-1529374255404-311a2a4f1fd9?w=300&h=300&fit=crop"],
+        descricao: 'Edição especial com assinatura bordada e detalhes premium'
+    },
+    {
+        id: 'camisa5',
+        nome: 'Camisa Jordan Street Style',
+        categoria: 'camisas',
+        preco: 269.9,
+        estoque: 15,
+        imagem: 'https://images.unsplash.com/photo-1574180045827-681f8a1a9622?w=300&h=300&fit=crop',
+        imagens: ["https://images.unsplash.com/photo-1574180045827-681f8a1a9622?w=300&h=300&fit=crop"],
+        descricao: 'Estilo urbano com design moderno e conforto máximo'
+    },
+    {
+        id: 'camisa6',
+        nome: 'Camisa Jordan Essentials',
+        categoria: 'camisas',
+        preco: 199.9,
+        estoque: 30,
+        imagem: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=300&h=300&fit=crop',
+        imagens: ["https://images.unsplash.com/photo-1551028719-00167b16eac5?w=300&h=300&fit=crop"],
+        descricao: 'Básica essencial para o dia a dia, super confortável'
+    },
+    {
+        id: 'camisa7',
+        nome: 'Camisa Jordan Pro Elite',
+        categoria: 'camisas',
+        preco: 379.9,
+        estoque: 5,
+        imagem: 'https://images.unsplash.com/photo-1594032194509-0056023973b2?w=300&h=300&fit=crop',
+        imagens: ["https://images.unsplash.com/photo-1594032194509-0056023973b2?w=300&h=300&fit=crop"],
+        descricao: 'Linha profissional com materiais de alta qualidade'
+    },
+    {
+        id: 'camisa8',
+        nome: 'Camisa Jordan Night Game',
+        categoria: 'camisas',
+        preco: 319.9,
+        estoque: 22,
+        imagem: 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=300&h=300&fit=crop',
+        imagens: ["https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=300&h=300&fit=crop"],
+        descricao: 'Design elegante para jogos noturnos e eventos especiais'
+    },
+    {
+        id: 'camisa9',
+        nome: 'Camisa Jordan Summer Edition',
+        categoria: 'camisas',
+        preco: 239.9,
+        estoque: 14,
+        imagem: 'https://images.unsplash.com/photo-1544441893-675973e31985?w=300&h=300&fit=crop',
+        imagens: ["https://images.unsplash.com/photo-1544441893-675973e31985?w=300&h=300&fit=crop"],
+        descricao: 'Edição verão com tecido leve e respirabilidade máxima'
+    },
+    {
+        id: 'camisa10',
+        nome: 'Camisa Jordan Limited Edition',
+        categoria: 'camisas',
+        preco: 459.9,
+        estoque: 3,
+        imagem: 'https://images.unsplash.com/photo-1503342394128-c104d54dba01?w=300&h=300&fit=crop',
+        imagens: ["https://images.unsplash.com/photo-1503342394128-c104d54dba01?w=300&h=300&fit=crop"],
+        descricao: 'Edição limitada numerada, apenas 100 unidades produzidas'
+    },
+    {
+        id: 'camisa11',
+        nome: 'Camisa Jordan Air Max Pro',
+        categoria: 'camisas',
+        preco: 329.9,
+        estoque: 20,
+        imagem: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=300&h=300&fit=crop',
+        imagens: ["https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=300&h=300&fit=crop"],
+        descricao: 'Tecnologia Air Max para máximo conforto e estilo'
+    },
+    {
+        id: 'camisa12',
+        nome: 'Camisa Jordan Urban Flex',
+        categoria: 'camisas',
+        preco: 279.9,
+        estoque: 16,
+        imagem: 'https://images.unsplash.com/photo-1529374255404-311a2a4f1fd9?w=300&h=300&fit=crop',
+        imagens: ["https://images.unsplash.com/photo-1529374255404-311a2a4f1fd9?w=300&h=300&fit=crop"],
+        descricao: 'Flexibilidade urbana com design contemporâneo'
+    },
+    {
+        id: 'camisa13',
+        nome: 'Camisa Jordan Court Vision',
+        categoria: 'camisas',
+        preco: 299.9,
+        estoque: 11,
+        imagem: 'https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?w=300&h=300&fit=crop',
+        imagens: ["https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?w=300&h=300&fit=crop"],
+        descricao: 'Inspirada nas quadras com estilo esportivo moderno'
+    },
+    {
+        id: 'camisa14',
+        nome: 'Camisa Jordan Heritage',
+        categoria: 'camisas',
+        preco: 349.9,
+        estoque: 7,
+        imagem: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=300&h=300&fit=crop',
+        imagens: ["https://images.unsplash.com/photo-1551028719-00167b16eac5?w=300&h=300&fit=crop"],
+        descricao: 'Herança Jordan com detalhes clássicos e modernos'
+    },
+    {
+        id: 'camisa15',
+        nome: 'Camisa Jordan Bounce',
+        categoria: 'camisas',
+        preco: 269.9,
+        estoque: 19,
+        imagem: 'https://images.unsplash.com/photo-1594032194509-0056023973b2?w=300&h=300&fit=crop',
+        imagens: ["https://images.unsplash.com/photo-1594032194509-0056023973b2?w=300&h=300&fit=crop"],
+        descricao: 'Tecnologia Bounce para liberdade de movimento'
+    },
+    {
+        id: 'camisa16',
+        nome: 'Camisa Jordan React',
+        categoria: 'camisas',
+        preco: 389.9,
+        estoque: 9,
+        imagem: 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=300&h=300&fit=crop',
+        imagens: ["https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=300&h=300&fit=crop"],
+        descricao: 'Conforto React com resposta energética premium'
+    },
+    {
+        id: 'camisa17',
+        nome: 'Camisa Jordan Zoom',
+        categoria: 'camisas',
+        preco: 319.9,
+        estoque: 13,
+        imagem: 'https://images.unsplash.com/photo-1544441893-675973e31985?w=300&h=300&fit=crop',
+        imagens: ["https://images.unsplash.com/photo-1544441893-675973e31985?w=300&h=300&fit=crop"],
+        descricao: 'Tecnologia Zoom para velocidade e agilidade'
+    },
+    {
+        id: 'camisa18',
+        nome: 'Camisa Jordan FlyEase',
+        categoria: 'camisas',
+        preco: 279.9,
+        estoque: 21,
+        imagem: 'https://images.unsplash.com/photo-1503342394128-c104d54dba01?w=300&h=300&fit=crop',
+        imagens: ["https://images.unsplash.com/photo-1503342394128-c104d54dba01?w=300&h=300&fit=crop"],
+        descricao: 'Sistema FlyEase para fácil uso e máximo conforto'
+    },
+    {
+        id: 'camisa19',
+        nome: 'piroquinha jordan',
+        categoria: 'camisas',
+        preco: 1e+26,
+        estoque: 1,
+        imagem: 'https://i.pinimg.com/736x/a7/12/73/a71273041791e41fc6394c106c34092f.jpg',
+        imagens: ["https://i.pinimg.com/736x/a7/12/73/a71273041791e41fc6394c106c34092f.jpg"],
+        descricao: 'piroca pequena da porrakkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkj'
+    },
+    
+    // ======================================
+    // CALÇAS - 18 PRODUTOS
+    // ======================================
+    {
+        id: 'calca1',
+        nome: 'Calça Jeans Jordan Classic',
+        categoria: 'calcas',
+        preco: 389.9,
+        estoque: 20,
+        imagem: 'https://images.unsplash.com/photo-1581349488280-6f2a3eb2a1f2?w=300&h=300&fit=crop',
+        imagens: ["https://images.unsplash.com/photo-1581349488280-6f2a3eb2a1f2?w=300&h=300&fit=crop"],
+        descricao: 'Jeans clássico com elastano para máximo conforto'
+    },
+    {
+        id: 'calca2',
+        nome: 'Calça Cargo Jordan Utility',
+        categoria: 'calcas',
+        preco: 329.9,
+        estoque: 15,
+        imagem: 'https://images.unsplash.com/photo-1593032465171-72c54d44c0a6?w=300&h=300&fit=crop',
+        imagens: ["https://images.unsplash.com/photo-1593032465171-72c54d44c0a6?w=300&h=300&fit=crop"],
+        descricao: 'Cargo prática com múltiplos bolsos e design utilitário'
+    },
+    {
+        id: 'calca3',
+        nome: 'Calça Moletom Jordan Comfort',
+        categoria: 'calcas',
+        preco: 279.9,
+        estoque: 25,
+        imagem: 'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=300&h=300&fit=crop',
+        imagens: ["https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=300&h=300&fit=crop"],
+        descricao: 'Moletom ultra confortável para relaxar em estilo'
+    },
+    {
+        id: 'calca4',
+        nome: 'Calça Chino Jordan Executive',
+        categoria: 'calcas',
+        preco: 349.9,
+        estoque: 18,
+        imagem: 'https://images.unsplash.com/photo-1582418702059-97ebafb35d09?w=300&h=300&fit=crop',
+        imagens: ["https://images.unsplash.com/photo-1582418702059-97ebafb35d09?w=300&h=300&fit=crop"],
+        descricao: 'Chino executivo para ocasiões formais e casuais'
+    },
+    {
+        id: 'calca5',
+        nome: 'Calça Jogger Jordan Sport',
+        categoria: 'calcas',
+        preco: 299.9,
+        estoque: 22,
+        imagem: 'https://images.unsplash.com/photo-1473966968600-fa801b869a1a?w=300&h=300&fit=crop',
+        imagens: ["https://images.unsplash.com/photo-1473966968600-fa801b869a1a?w=300&h=300&fit=crop"],
+        descricao: 'Jogger esportiva com ajuste perfeito e mobilidade'
+    },
+    {
+        id: 'calca6',
+        nome: 'Calça Social Jordan Premium',
+        categoria: 'calcas',
+        preco: 429.9,
+        estoque: 10,
+        imagem: 'https://images.unsplash.com/photo-1542272604-787c3835535d?w=300&h=300&fit=crop',
+        imagens: ["https://images.unsplash.com/photo-1542272604-787c3835535d?w=300&h=300&fit=crop"],
+        descricao: 'Social premium com corte italiano e tecido de alta qualidade'
+    },
+    {
+        id: 'calca7',
+        nome: 'Calça Tactel Jordan Performance',
+        categoria: 'calcas',
+        preco: 319.9,
+        estoque: 12,
+        imagem: 'https://images.unsplash.com/photo-1475178626620-a4d074967452?w=300&h=300&fit=crop',
+        imagens: ["https://images.unsplash.com/photo-1475178626620-a4d074967452?w=300&h=300&fit=crop"],
+        descricao: 'Tactel de performance para atividades físicas intensas'
+    },
+    {
+        id: 'calca8',
+        nome: 'Calça Wide Leg Jordan',
+        categoria: 'calcas',
+        preco: 369.9,
+        estoque: 8,
+        imagem: 'https://images.unsplash.com/photo-1576995853123-5a10305d93c0?w=300&h=300&fit=crop',
+        imagens: ["https://images.unsplash.com/photo-1576995853123-5a10305d93c0?w=300&h=300&fit=crop"],
+        descricao: 'Wide leg fashion com corte moderno e tendência streetwear'
+    },
+    {
+        id: 'calca9',
+        nome: 'Calça Linho Jordan Summer',
+        categoria: 'calcas',
+        preco: 289.9,
+        estoque: 16,
+        imagem: 'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=300&h=300&fit=crop',
+        imagens: ["https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=300&h=300&fit=crop"],
+        descricao: 'Linho leve e respirável para os dias mais quentes'
+    },
+    {
+        id: 'calca10',
+        nome: 'Calça Couro Jordan Urban',
+        categoria: 'calcas',
+        preco: 599.9,
+        estoque: 4,
+        imagem: 'https://images.unsplash.com/photo-1552374196-c4e7ffc6e126?w=300&h=300&fit=crop',
+        imagens: ["https://images.unsplash.com/photo-1552374196-c4e7ffc6e126?w=300&h=300&fit=crop"],
+        descricao: 'Couro legítimo com design urbano e estilo ousado'
+    },
+    {
+        id: 'calca11',
+        nome: 'Calça Sarja Jordan Slim',
+        categoria: 'calcas',
+        preco: 339.9,
+        estoque: 17,
+        imagem: 'https://images.unsplash.com/photo-1581349488280-6f2a3eb2a1f2?w=300&h=300&fit=crop',
+        imagens: ["https://images.unsplash.com/photo-1581349488280-6f2a3eb2a1f2?w=300&h=300&fit=crop"],
+        descricao: 'Sarja slim fit com corte moderno e ajuste perfeito'
+    },
+    {
+        id: 'calca12',
+        nome: 'Calça Tactel Jordan Active',
+        categoria: 'calcas',
+        preco: 299.9,
+        estoque: 14,
+        imagem: 'https://images.unsplash.com/photo-1593032465171-72c54d44c0a6?w=300&h=300&fit=crop',
+        imagens: ["https://images.unsplash.com/photo-1593032465171-72c54d44c0a6?w=300&h=300&fit=crop"],
+        descricao: 'Tactel para atividades físicas com máxima liberdade'
+    },
+    {
+        id: 'calca13',
+        nome: 'Calça Moletom Jordan Tech',
+        categoria: 'calcas',
+        preco: 319.9,
+        estoque: 11,
+        imagem: 'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=300&h=300&fit=crop',
+        imagens: ["https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=300&h=300&fit=crop"],
+        descricao: 'Moletom tech fleece com tecnologia térmica avançada'
+    },
+    {
+        id: 'calca14',
+        nome: 'Calça Jeans Jordan Skinny',
+        categoria: 'calcas',
+        preco: 379.9,
+        estoque: 9,
+        imagem: 'https://images.unsplash.com/photo-1582418702059-97ebafb35d09?w=300&h=300&fit=crop',
+        imagens: ["https://images.unsplash.com/photo-1582418702059-97ebafb35d09?w=300&h=300&fit=crop"],
+        descricao: 'Jeans skinny fit com elastano e corte moderno'
+    },
+    {
+        id: 'calca15',
+        nome: 'Calça Cargo Jordan Military',
+        categoria: 'calcas',
+        preco: 349.9,
+        estoque: 13,
+        imagem: 'https://images.unsplash.com/photo-1473966968600-fa801b869a1a?w=300&h=300&fit=crop',
+        imagens: ["https://images.unsplash.com/photo-1473966968600-fa801b869a1a?w=300&h=300&fit=crop"],
+        descricao: 'Cargo estilo militar com múltiplos bolsos funcionais'
+    },
+    {
+        id: 'calca16',
+        nome: 'Calça Sarja Jordan Regular',
+        categoria: 'calcas',
+        preco: 289.9,
+        estoque: 19,
+        imagem: 'https://images.unsplash.com/photo-1542272604-787c3835535d?w=300&h=300&fit=crop',
+        imagens: ["https://images.unsplash.com/photo-1542272604-787c3835535d?w=300&h=300&fit=crop"],
+        descricao: 'Sarja regular fit para uso casual e confortável'
+    },
+    {
+        id: 'calca17',
+        nome: 'Calça Tactel Jordan Pro',
+        categoria: 'calcas',
+        preco: 359.9,
+        estoque: 7,
+        imagem: 'https://images.unsplash.com/photo-1475178626620-a4d074967452?w=300&h=300&fit=crop',
+        imagens: ["https://images.unsplash.com/photo-1475178626620-a4d074967452?w=300&h=300&fit=crop"],
+        descricao: 'Tactel profissional para alto rendimento esportivo'
+    },
+    {
+        id: 'calca18',
+        nome: 'Calça Jeans Jordan Relaxed',
+        categoria: 'calcas',
+        preco: 329.9,
+        estoque: 15,
+        imagem: 'https://images.unsplash.com/photo-1576995853123-5a10305d93c0?w=300&h=300&fit=crop',
+        imagens: ["https://images.unsplash.com/photo-1576995853123-5a10305d93c0?w=300&h=300&fit=crop"],
+        descricao: 'Jeans relaxed fit para máximo conforto no dia a dia'
+    }
+];
+
+let carrinho = [];
+let clienteInfo = {
+    nome: '', telefone: '', email: '', endereco: '',
+    pagamento: 'pix', entrega: 'padrao', observacoes: ''
+};
+
+// ============================================
+// VARIÁVEIS DO CARROSSEL
+// ============================================
+
+let currentCarouselIndex = 0;
+let currentProductId = '';
+let autoScrollInterval;
+
+// ============================================
+// SISTEMA DE AUTO-SAVE (LOCALSTORAGE)
+// ============================================
+
+function saveCart() {
+    localStorage.setItem('jordanwear_cart', JSON.stringify(carrinho));
+    console.log('Carrinho salvo automaticamente:', carrinho.length, 'itens');
+}
+
+function loadCart() {
+    try {
+        const saved = localStorage.getItem('jordanwear_cart');
+        if (saved) {
+            carrinho = JSON.parse(saved);
+            
+            carrinho = carrinho.filter(item => {
+                const produto = produtos.find(p => p.id === item.id);
+                if (!produto) return false;
+                
+                if (item.quantidade > produto.estoque) {
+                    item.quantidade = produto.estoque;
+                    if (item.quantidade === 0) return false;
+                }
+                return true;
+            });
+            
+            updateCartDisplay();
+            console.log('Carrinho carregado:', carrinho.length, 'itens');
+        }
+    } catch (e) {
+        console.error('Erro ao carregar carrinho:', e);
+        carrinho = [];
+    }
+}
+
+function clearSavedCart() {
+    if (carrinho.length === 0) {
+        showNotification('Carrinho já está vazio!');
+        return;
+    }
+    
+    if (confirm('Tem certeza que quer limpar o carrinho?')) {
+        carrinho = [];
+        localStorage.removeItem('jordanwear_cart');
+        updateCartDisplay();
+        showNotification('Carrinho limpo!');
+    }
+}
+
+// ============================================
+// INICIALIZAÇÃO
+// ============================================
+
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Página carregada! Total de produtos:', produtos.length);
+    renderAllProducts();
+    startBannerRotation();
+    loadCart();
+    updateCartDisplay();
+    setupEventListeners();
+});
+
+// ============================================
+// RENDERIZAÇÃO DOS PRODUTOS
+// ============================================
+
+function renderAllProducts() {
+    renderCategory('camisas');
+    renderCategory('calcas');
+}
+
+function renderCategory(categoria) {
+    const container = document.getElementById(`${categoria}Products`);
+    if (!container) return;
+    
+    const filtered = produtos.filter(p => p.categoria === categoria);
+    let html = '';
+    
+    for (const produto of filtered) {
+        const stockClass = getStockClass(produto.estoque);
+        const stockText = getStockText(produto.estoque);
+        
+        html += `
+        <div class="product">
+            <img src="${produto.imagem}" alt="${produto.nome}" loading="lazy">
+            <h4>${produto.nome}</h4>
+            <div class="product-price">R$ ${produto.preco.toFixed(2).replace('.', ',')}</div>
+            <div class="stock-info ${stockClass}">${stockText}</div>
+            <div class="product-buttons">
+                ${produto.estoque > 0 ? 
+                    `<button class="product-btn buy-btn" data-id="${produto.id}">🛒 COMPRAR</button>` :
+                    `<button class="product-btn disabled-btn" disabled>🔴 ESGOTADO</button>`
+                }
+                <button class="product-btn details-btn" data-id="${produto.id}">👀 DETALHES</button>
+            </div>
+        </div>
+        `;
+    }
+    
+    container.innerHTML = html;
+}
+
+function getStockClass(estoque) {
+    if (estoque === 0) return 'stock-out';
+    if (estoque <= 3) return 'stock-low';
+    if (estoque <= 10) return 'stock-medium';
+    return 'stock-high';
+}
+
+function getStockText(estoque) {
+    if (estoque === 0) return 'ESGOTADO';
+    if (estoque <= 3) return `ÚLTIMAS ${estoque}`;
+    if (estoque <= 10) return 'BAIXO ESTOQUE';
+    return 'EM ESTOQUE';
+}
+
+// ============================================
+// SETUP EVENT LISTENERS
+// ============================================
+
+function setupEventListeners() {
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('details-btn') || e.target.closest('.details-btn')) {
+            const productId = e.target.getAttribute('data-id') || 
+                             e.target.closest('[data-id]')?.getAttribute('data-id');
+            if (productId) showProductDetails(productId);
+        }
+        
+        if (e.target.classList.contains('buy-btn') || e.target.closest('.buy-btn')) {
+            const productId = e.target.getAttribute('data-id') || 
+                             e.target.closest('[data-id]')?.getAttribute('data-id');
+            if (productId) addToCart(productId);
+        }
+        
+        if (e.target.classList.contains('tab')) {
+            const tabText = e.target.textContent.toLowerCase();
+            const tabId = tabText === 'camisas' ? 'camisas' : 'calcas';
+            showTab(tabId);
+        }
+    });
+    
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeAllModals();
+        }
+    });
+}
+
+// ============================================
+// FUNÇÕES DO CARROSSEL
+// ============================================
+
+function showProductDetails(productId) {
+    const produto = produtos.find(p => p.id === productId);
+    if (!produto) return;
+    
+    currentProductId = productId;
+    currentCarouselIndex = 0;
+    
+    const stockClass = getStockClass(produto.estoque);
+    const stockText = getStockText(produto.estoque);
+    
+    const modal = document.getElementById('detailsModal');
+    
+    const carouselHTML = `
+        <div class="image-carousel">
+            <div class="carousel-images" id="carouselImages">
+                ${produto.imagens.map((img, index) => `
+                    <img src="${img}" class="carousel-image" data-index="${index}" loading="lazy">
+                `).join('')}
+            </div>
+            
+            <div class="carousel-controls">
+                <button class="carousel-btn" onclick="prevImage()">‹</button>
+                <button class="carousel-btn" onclick="nextImage()">›</button>
+            </div>
+            
+            <div class="carousel-indicators" id="carouselIndicators">
+                ${produto.imagens.map((_, index) => `
+                    <button class="carousel-indicator ${index === 0 ? 'active' : ''}" 
+                            onclick="goToImage(${index})"></button>
+                `).join('')}
+            </div>
+        </div>
+        
+        <div class="image-thumbnails" id="imageThumbnails">
+            ${produto.imagens.map((img, index) => `
+                <img src="${img}" class="thumbnail ${index === 0 ? 'active' : ''}" 
+                     onclick="goToImage(${index})" loading="lazy">
+            `).join('')}
+        </div>
+    `;
+    
+    modal.innerHTML = `
+        <div class="details-content">
+            <div style="padding: 20px; position: relative;">
+                <button onclick="closeModal('detailsModal')" 
+                        style="position: absolute; top: 10px; right: 10px; background: none; border: none; font-size: 24px; cursor: pointer; color: #666; z-index: 10;">×</button>
+                
+                ${carouselHTML}
+                
+                <h3 style="margin: 15px 0 10px; color: #333; font-size: 18px;">${produto.nome}</h3>
+                <div style="font-size: 22px; font-weight: bold; color: #000; margin: 10px 0;">
+                    R$ ${produto.preco.toFixed(2).replace('.', ',')}
+                </div>
+                
+                <div class="stock-info ${stockClass}" style="margin: 10px 0; padding: 8px; border-radius: 5px; font-size: 14px;">
+                    ${stockText}
+                </div>
+                
+                <p style="color: #666; line-height: 1.5; margin: 15px 0; font-size: 14px;">${produto.descricao}</p>
+                
+                <div style="font-size: 13px; color: #888; margin: 10px 0;">
+                    📏 <strong>Tamanhos disponíveis:</strong> P, M, G, GG
+                </div>
+                
+                ${produto.estoque > 0 ? 
+                    `<button onclick="addToCart('${produto.id}'); closeModal('detailsModal')" 
+                            style="width: 100%; padding: 12px; background: #000; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 14px; margin-top: 10px;">
+                        🛒 Adicionar ao Carrinho
+                    </button>` :
+                    `<div style="text-align: center; padding: 12px; background: #f8d7da; color: #721c24; border-radius: 8px; margin: 15px 0; font-size: 14px;">
+                        🔴 Produto temporariamente esgotado
+                    </div>`
+                }
+            </div>
+        </div>
+    `;
+    
+    modal.classList.add('active');
+    
+    // Iniciar auto-scroll do carrossel
+    initCarousel();
+}
+
+function initCarousel() {
+    // Parar qualquer intervalo anterior
+    if (autoScrollInterval) {
+        clearInterval(autoScrollInterval);
+    }
+    
+    // Iniciar auto-scroll (muda a cada 4 segundos)
+    autoScrollInterval = setInterval(() => {
+        nextImage();
+    }, 4000);
+    
+    updateCarousel();
+}
+
+function nextImage() {
+    const produto = produtos.find(p => p.id === currentProductId);
+    if (!produto) return;
+    
+    currentCarouselIndex = (currentCarouselIndex + 1) % produto.imagens.length;
+    updateCarousel();
+    resetAutoScroll();
+}
+
+function prevImage() {
+    const produto = produtos.find(p => p.id === currentProductId);
+    if (!produto) return;
+    
+    currentCarouselIndex = (currentCarouselIndex - 1 + produto.imagens.length) % produto.imagens.length;
+    updateCarousel();
+    resetAutoScroll();
+}
+
+function goToImage(index) {
+    currentCarouselIndex = index;
+    updateCarousel();
+    resetAutoScroll();
+}
+
+function updateCarousel() {
+    const carouselImages = document.getElementById('carouselImages');
+    const indicators = document.querySelectorAll('.carousel-indicator');
+    const thumbnails = document.querySelectorAll('.thumbnail');
+    
+    if (carouselImages) {
+        carouselImages.style.transform = `translateX(-${currentCarouselIndex * 100}%)`;
+    }
+    
+    // Atualizar indicadores
+    indicators.forEach((indicator, index) => {
+        indicator.classList.toggle('active', index === currentCarouselIndex);
+    });
+    
+    // Atualizar miniaturas
+    thumbnails.forEach((thumbnail, index) => {
+        thumbnail.classList.toggle('active', index === currentCarouselIndex);
+    });
+}
+
+function resetAutoScroll() {
+    if (autoScrollInterval) {
+        clearInterval(autoScrollInterval);
+        autoScrollInterval = setInterval(() => {
+            nextImage();
+        }, 4000);
+    }
+}
+
+function closeModal(modalId) {
+    if (autoScrollInterval) {
+        clearInterval(autoScrollInterval);
+        autoScrollInterval = null;
+    }
+    document.getElementById(modalId).classList.remove('active');
+}
+
+function closeAllModals() {
+    if (autoScrollInterval) {
+        clearInterval(autoScrollInterval);
+        autoScrollInterval = null;
+    }
+    closeModal('detailsModal');
+    closeModal('checkoutModal');
+    document.getElementById('cartModal').classList.remove('active');
+}
+
+// ============================================
+// BANNER ROTATIVO
+// ============================================
+
+function startBannerRotation() {
+    const banners = document.querySelectorAll('.banner img');
+    if (banners.length === 0) return;
+    
+    let i = 0;
+    
+    const rotate = () => {
+        banners[i].classList.remove('active');
+        i = (i + 1) % banners.length;
+        banners[i].classList.add('active');
+    };
+    
+    banners[0].classList.add('active');
+    setInterval(rotate, 4000);
+}
+
+// ============================================
+// SISTEMA DE TABS
+// ============================================
+
+function showTab(tabId) {
+    document.querySelectorAll('.section').forEach(section => {
+        section.classList.add('hidden');
+    });
+    
+    const sectionToShow = document.getElementById(tabId);
+    if (sectionToShow) {
+        sectionToShow.classList.remove('hidden');
+    }
+    
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    const targetTab = Array.from(document.querySelectorAll('.tab')).find(tab => 
+        tab.textContent.toLowerCase().replace('ç', 'c') === tabId.toLowerCase()
+    );
+    if (targetTab) {
+        targetTab.classList.add('active');
+    }
+}
+
+// ============================================
+// SISTEMA DE CARRINHO (COM AUTO-SAVE)
+// ============================================
+
+function addToCart(productId) {
+    const produto = produtos.find(p => p.id === productId);
+    if (!produto || produto.estoque === 0) {
+        showNotification('Produto esgotado!');
+        return;
+    }
+    
+    const itemIndex = carrinho.findIndex(item => item.id === productId);
+    
+    if (itemIndex > -1) {
+        if (carrinho[itemIndex].quantidade < produto.estoque) {
+            carrinho[itemIndex].quantidade++;
+        } else {
+            showNotification('Quantidade máxima em estoque!');
+            return;
+        }
+    } else {
+        carrinho.push({
+            id: productId,
+            nome: produto.nome,
+            preco: produto.preco,
+            quantidade: 1,
+            imagem: produto.imagem
+        });
+    }
+    
+    saveCart();
+    updateCartDisplay();
+    showNotification(`${produto.nome} adicionado!`);
+}
+
+function updateCartDisplay() {
+    const cartItems = document.getElementById('cartItems');
+    const cartCount = document.querySelector('.cart-count');
+    const cartTotal = document.getElementById('cartTotal');
+    
+    const totalItems = carrinho.reduce((sum, item) => sum + item.quantidade, 0);
+    cartCount.textContent = totalItems;
+    
+    if (carrinho.length === 0) {
+        cartItems.innerHTML = '<p style="text-align:center;color:#666;padding:20px 0;">Carrinho vazio</p>';
+        cartTotal.textContent = 'R$ 0,00';
+        return;
+    }
+    
+    let total = 0;
+    let html = '';
+    
+    for (const item of carrinho) {
+        const itemTotal = item.preco * item.quantidade;
+        total += itemTotal;
+        
+        html += `
+        <div class="cart-item">
+            <img src="${item.imagem}" alt="${item.nome}" loading="lazy">
+            <div class="cart-item-info">
+                <h4 style="font-size: 13px;">${item.nome}</h4>
+                <div class="cart-item-price">R$ ${itemTotal.toFixed(2).replace('.', ',')}</div>
+                <div class="cart-item-actions">
+                    <div class="cart-item-quantity">
+                        <button class="quantity-btn-small" onclick="updateCartItem('${item.id}', -1)">-</button>
+                        <span style="margin:0 6px;">${item.quantidade}</span>
+                        <button class="quantity-btn-small" onclick="updateCartItem('${item.id}', 1)">+</button>
+                    </div>
+                    <button class="cart-item-remove" onclick="removeFromCart('${item.id}')">Remover</button>
+                </div>
+            </div>
+        </div>
+        `;
+    }
+    
+    cartItems.innerHTML = html;
+    cartTotal.textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
+}
+
+function updateCartItem(productId, change) {
+    const itemIndex = carrinho.findIndex(item => item.id === productId);
+    if (itemIndex === -1) return;
+    
+    const item = carrinho[itemIndex];
+    const produto = produtos.find(p => p.id === productId);
+    
+    if (!produto) return;
+    
+    const newQuantity = item.quantidade + change;
+    
+    if (newQuantity < 1) {
+        carrinho.splice(itemIndex, 1);
+    } else if (newQuantity > produto.estoque) {
+        showNotification('Quantidade máxima!');
+        return;
+    } else {
+        carrinho[itemIndex].quantidade = newQuantity;
+    }
+    
+    saveCart();
+    updateCartDisplay();
+}
+
+function removeFromCart(productId) {
+    const itemIndex = carrinho.findIndex(item => item.id === productId);
+    if (itemIndex > -1) {
+        carrinho.splice(itemIndex, 1);
+        saveCart();
+        updateCartDisplay();
+        showNotification('Item removido!');
+    }
+}
+
+function toggleCart() {
+    document.getElementById('cartModal').classList.toggle('active');
+}
+
+// ============================================
+// CHECKOUT
+// ============================================
+
+function openCheckout() {
+    if (carrinho.length === 0) {
+        showNotification('Carrinho vazio!');
+        return;
+    }
+    
+    const modal = document.getElementById('checkoutModal');
+    const form = document.getElementById('checkoutForm');
+    
+    const subtotal = carrinho.reduce((sum, item) => sum + (item.preco * item.quantidade), 0);
+    const frete = clienteInfo.entrega === 'padrao' ? 9.90 : 19.90;
+    const total = subtotal + frete;
+    
+    form.innerHTML = `
+        <div class="order-summary">
+            <h4>Resumo do Pedido</h4>
+            ${carrinho.map(item => `
+                <div class="order-item">
+                    <span>${item.quantidade}x ${item.nome}</span>
+                    <span>R$ ${(item.preco * item.quantidade).toFixed(2).replace('.', ',')}</span>
+                </div>
+            `).join('')}
+            <div class="order-item">
+                <span>Subtotal</span>
+                <span>R$ ${subtotal.toFixed(2).replace('.', ',')}</span>
+            </div>
+            <div class="order-item">
+                <span>Frete</span>
+                <span>R$ ${frete.toFixed(2).replace('.', ',')}</span>
+            </div>
+            <div class="order-total">
+                <span>TOTAL</span>
+                <span>R$ ${total.toFixed(2).replace('.', ',')}</span>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label for="nome">Nome Completo *</label>
+            <input type="text" id="nome" value="${clienteInfo.nome}" placeholder="Seu nome completo" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="telefone">Telefone/WhatsApp *</label>
+            <input type="tel" id="telefone" value="${clienteInfo.telefone}" placeholder="(00) 00000-0000" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="endereco">Endereço de Entrega *</label>
+            <textarea id="endereco" placeholder="Rua, Número, Bairro, Cidade - Estado, CEP" required>${clienteInfo.endereco}</textarea>
+        </div>
+        
+        <div class="form-group">
+            <label>Forma de Pagamento *</label>
+            <div class="payment-methods">
+                <div class="payment-option active">
+                    PIX (Única opção disponível)
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label>Tipo de Entrega *</label>
+            <div class="delivery-options">
+                <div class="delivery-option ${clienteInfo.entrega === 'padrao' ? 'active' : ''}" onclick="selectDelivery('padrao')">
+                    <strong>Entrega Padrão</strong> (3-5 dias úteis)
+                    <span class="delivery-price">R$ 9,90</span>
+                </div>
+                <div class="delivery-option ${clienteInfo.entrega === 'expressa' ? 'active' : ''}" onclick="selectDelivery('expressa')">
+                    <strong>Entrega Expressa</strong> (1-2 dias úteis)
+                    <span class="delivery-price">R$ 19,90</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label for="observacoes">Observações</label>
+            <textarea id="observacoes" placeholder="Observações sobre o pedido">${clienteInfo.observacoes}</textarea>
+        </div>
+        
+        <button class="submit-order-btn" onclick="sendWhatsAppOrder()">
+            📱 Enviar Pedido pelo WhatsApp
+        </button>
+    `;
+    
+    modal.classList.add('active');
+    toggleCart();
+}
+
+function closeCheckout() {
+    closeModal('checkoutModal');
+}
+
+function selectDelivery(type) {
+    clienteInfo.entrega = type;
+    document.querySelectorAll('.delivery-option').forEach(option => {
+        option.classList.remove('active');
+    });
+    event.target.classList.add('active');
+    openCheckout();
+}
+
+function sendWhatsAppOrder() {
+    clienteInfo.nome = document.getElementById('nome').value.trim();
+    clienteInfo.telefone = document.getElementById('telefone').value.trim();
+    clienteInfo.endereco = document.getElementById('endereco').value.trim();
+    clienteInfo.observacoes = document.getElementById('observacoes').value.trim();
+    
+    if (!clienteInfo.nome || !clienteInfo.telefone || !clienteInfo.endereco) {
+        showNotification('Preencha todos os campos obrigatórios!');
+        return;
+    }
+    
+    const subtotal = carrinho.reduce((sum, item) => sum + (item.preco * item.quantidade), 0);
+    const frete = clienteInfo.entrega === 'padrao' ? 9.90 : 19.90;
+    const total = subtotal + frete;
+    
+    let message = `🛒 *PEDIDO - JordanWearStore*\n\n`;
+    message += `*Cliente:* ${clienteInfo.nome}\n`;
+    message += `*Telefone:* ${clienteInfo.telefone}\n`;
+    message += `*Endereço:*\n${clienteInfo.endereco}\n\n`;
+    message += `*Pagamento:* PIX\n`;
+    message += `*Entrega:* ${clienteInfo.entrega === 'expressa' ? 'Expressa (1-2 dias)' : 'Padrão (3-5 dias)'}\n\n`;
+    
+    message += `*ITENS:*\n`;
+    carrinho.forEach(item => {
+        message += `• ${item.quantidade}x ${item.nome} - R$ ${(item.preco * item.quantidade).toFixed(2).replace('.', ',')}\n`;
+    });
+    
+    message += `\n*VALORES:*\n`;
+    message += `Subtotal: R$ ${subtotal.toFixed(2).replace('.', ',')}\n`;
+    message += `Frete: R$ ${frete.toFixed(2).replace('.', ',')}\n`;
+    message += `*TOTAL: R$ ${total.toFixed(2).replace('.', ',')}*\n`;
+    
+    if (clienteInfo.observacoes) {
+        message += `\n*Observações:*\n${clienteInfo.observacoes}\n`;
+    }
+    
+    message += `\n📅 *Data:* ${new Date().toLocaleString('pt-BR')}`;
+    
+    const phone = '+555181875780';
+    const url = `https://wa.me/${phone.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`;
+    
+    carrinho.forEach(item => {
+        const produtoIndex = produtos.findIndex(p => p.id === item.id);
+        if (produtoIndex !== -1) {
+            produtos[produtoIndex].estoque -= item.quantidade;
+        }
+    });
+    
+    carrinho = [];
+    saveCart();
+    updateCartDisplay();
+    closeCheckout();
+    renderAllProducts();
+    
+    window.open(url, '_blank');
+    showNotification('Pedido enviado!');
+}
+
+// ============================================
+// NOTIFICAÇÃO
+// ============================================
+
+let notificationTimeout;
+
+function showNotification(message) {
+    const oldNotification = document.querySelector('.notification');
+    if (oldNotification) {
+        clearTimeout(notificationTimeout);
+        oldNotification.remove();
+    }
+    
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    notification.textContent = message;
+    
+    document.body.appendChild(notification);
+    
+    notificationTimeout = setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease';
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+}
+
+// ============================================
+// FALLBACK
+// ============================================
+
+setTimeout(() => {
+    if (!document.getElementById('camisasProducts').innerHTML) {
+        renderAllProducts();
+    }
+}, 100);
+</script>
+</body>
+</html>
